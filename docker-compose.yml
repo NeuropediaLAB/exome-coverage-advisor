@@ -1,0 +1,33 @@
+name: exome-advisor
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: exome-advisor-api:local
+    container_name: exome-advisor-api
+    restart: unless-stopped
+    networks: [exome]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: exome-advisor-frontend:local
+    container_name: exome-advisor-frontend
+    restart: unless-stopped
+    ports:
+      - "8401:8501"
+    networks: [exome]
+    depends_on:
+      - api
+
+networks:
+  exome:
+    name: exome-advisor
